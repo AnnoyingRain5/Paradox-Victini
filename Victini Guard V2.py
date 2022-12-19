@@ -25,8 +25,8 @@ async def on_message(ctx):
         return
 
     if ctx.channel.id == 981343621104140308:
-        await ctx.add_reaction(":vyes:839265716019527700")
-        await ctx.add_reaction(":vno:839265715685031986")
+        await ctx.add_reaction(":vyes:1054227682944110612")
+        await ctx.add_reaction(":vno:1054227685016092833")
         
     if ctx.channel.id == 809238709635383327:
         if ctx.attachments == [] and "http" not in ctx.content:
