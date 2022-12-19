@@ -23,16 +23,19 @@ async def on_ready():
 async def on_message(ctx):
     if ctx.author == bot.user:
         return
-
+    
+    # if the channel is polls
     if ctx.channel.id == 981343621104140308:
         await ctx.add_reaction(":vyes:1054227682944110612")
         await ctx.add_reaction(":vno:1054227685016092833")
-        
+    
+    # if the channel is artwork showcase
     if ctx.channel.id == 809238709635383327:
         if ctx.attachments == [] and "http" not in ctx.content:
             await ctx.delete()
             await ctx.author.send("You can only send your art in <#809238709635383327>, all messages must contain art or a link to it!")
     
+    # if the channnel is a DM
     if isinstance(ctx.channel, discord.DMChannel):
         info = await bot.application_info()
         await info.owner.send("You have a new DM from " + ctx.author.name + " (" + ctx.author.mention + "):\n" + ctx.content)
@@ -62,9 +65,10 @@ async def on_application_command_error(ctx, error):
         # traceback requires a file-like object, so we use StringIO to get the traceback as a string
         traceback.print_exception(error, file=sio, limit=4)
         tb = sio.getvalue()  # get the string from the StringIO object
-        if ctx.guild != None:
+        
+        if ctx.guild != None: # if the command was run in a guild, NOT a DM
             message = f"An error occurred in {ctx.guild.name} ({ctx.guild.id}) in {ctx.channel.name} ({ctx.channel.mention}) by {ctx.author.name} ({ctx.author.mention})\n"
-        else:
+        else: # command run in DM, do not include guild info
              message = f"An error occurred in A DM with {ctx.author.name} ({ctx.author.mention})\n"
         message += f"Error: `{error}`\n The traceback will be supplied in the next message."
         await info.owner.send(message)
