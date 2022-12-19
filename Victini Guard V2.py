@@ -39,10 +39,18 @@ async def on_message(ctx):
     if isinstance(ctx.channel, discord.DMChannel):
         info = await bot.application_info()
         await info.owner.send("You have a new DM from " + ctx.author.name + " (" + ctx.author.mention + "):\n" + ctx.content)
-    
+
+# main commands
+
 @bot.slash_command(description="Ping the bot!")
 async def ping(ctx):
     await ctx.respond(f"Pong! {round(bot.latency * 1000)}ms")
+
+@bot.slash_command(description="Get the source code!")
+async def github(ctx):
+    await ctx.respond("check out my source code here: https://github.com/AnnoyingRain5/Victini-Guard, and send a PR if you're feeling kind!")
+
+# admin commands
 
 @bot.slash_command(description="owner only command")
 async def senddm(ctx, user: discord.User, message: str):
@@ -52,6 +60,11 @@ async def senddm(ctx, user: discord.User, message: str):
         await ctx.respond(f"Sent \"{message}\" to {user.mention}!", ephemeral=True)
     else:
         await ctx.respond("No.")
+        
+@bot.slash_command(description="owner only command")
+async def changestatus(ctx, status: str):
+    await bot.change_presence(activity=discord.Game(name=status))
+    await ctx.respond(f"Changed status to \"{status}\"!", ephemeral=True)
     
 
 # Global command error handler
