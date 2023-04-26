@@ -69,7 +69,7 @@ async def ask(ctx: SlashContext, question: str):
         await ctx.respond(f"This needs to be used in the {bot.get_channel(QNA_CHANNEL_ID).mention} channel!", ephemeral=True)
         return
     embed = discord.Embed()
-    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar)
+    embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar)
     embed.title = question
     embed.set_footer(text=f"New question by {ctx.author.name}")
     embed.color = 0x20a303
@@ -87,7 +87,7 @@ async def poll(ctx: SlashContext, poll: str):
         await ctx.respond(f"This needs to be used in the {bot.get_channel(QNA_CHANNEL_ID).mention} channel!", ephemeral=True)
         return
     embed = discord.Embed()
-    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar)
+    embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar)
     embed.title = poll
     embed.set_footer(text=f"New poll by {ctx.author.name}")
     embed.color = 0x2b34cf
