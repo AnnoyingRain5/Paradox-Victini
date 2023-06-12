@@ -15,6 +15,7 @@ intents += discord.Intents.message_content
 bot = discord.Bot(intents=intents)
 
 QNA_CHANNEL_ID = 1094266918556422204
+COUNT_CHANNEL_ID = 838432869248008203
 
 
 @bot.event
@@ -41,6 +42,14 @@ async def on_message(ctx: discord.Message):
         if ctx.attachments == [] and "http" not in ctx.content:
             await ctx.delete()
             await ctx.author.send("You can only send your art in <#809238709635383327>, all messages must contain art or a link to it!")
+    if ctx.channel.id == COUNT_CHANNEL_ID:
+        message = await ctx.channel.history(limit=2).flatten()
+        message = message[1]
+        if message is None:
+            # this should not happen
+            raise Exception("could not fetch last message")
+        if ctx.author.id == message.author.id:
+            await ctx.delete()
 
     # if the channnel is a DM
     if isinstance(ctx.channel, discord.DMChannel):
@@ -114,6 +123,16 @@ async def senddm(ctx: SlashContext, user: discord.User, message: str):
     if ctx.author == info.owner:
         await user.send(message)
         await ctx.respond(f"Sent \"{message}\" to {user.mention}!", ephemeral=True)
+    else:
+        await ctx.respond("No.")
+
+
+@bot.slash_command(description="owner only command")
+async def say(ctx: SlashContext, message: str):
+    info = await bot.application_info()
+    if ctx.author == info.owner:
+        await ctx.channel.send(message)
+        await ctx.respond(f"Done!", ephemeral=True)
     else:
         await ctx.respond("No.")
 
