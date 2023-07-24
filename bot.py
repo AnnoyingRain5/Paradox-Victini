@@ -12,6 +12,7 @@ load_dotenv()  # load env vars from file
 # set up intents
 intents = discord.Intents.default()
 intents += discord.Intents.message_content
+intents += discord.Intents.members
 bot = discord.Bot(intents=intents)
 
 QNA_CHANNEL_ID = 1094266918556422204
@@ -56,6 +57,21 @@ async def on_message(ctx: discord.Message):
         info = await bot.application_info()
         await info.owner.send("You have a new DM from " + ctx.author.name + " (" + ctx.author.mention + "):\n" + ctx.content)
 
+@bot.event
+async def on_member_update(before: discord.Member, after: discord.Member):
+    if before.roles != after.roles:
+        for role in before.roles:
+            if role.color.value != 0:
+                if len(role.members) == 0:
+                    print("deleting role ", role.name)
+                    await role.delete()
+@bot.event
+async def on_raw_member_remove(payload: discord.RawMemberRemoveEvent):
+    for role in bot.get_guild(payload.guild_id):
+        if role.color.value != 0:
+            if len(role.members) == 0:
+                print("deleting role ", role.name)
+                await role.delete()
 
 # main commands
 
