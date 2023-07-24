@@ -114,38 +114,38 @@ async def poll(ctx: SlashContext, poll: str):
             break  # ensure we don't react more than once
 
 
-@bot.slash_command(description="Set your colour!")
-async def setcolour(ctx: SlashContext, colour: str):
-    colour = colour.lstrip("#")
+@bot.slash_command(description="Set your color!")
+async def setcolor(ctx: SlashContext, color: str):
+    color = color.lstrip("#")
     try:
-        intcolour = int(colour, 16)
-        if len(colour) != 6:
+        intcolor = int(color, 16)
+        if len(color) != 6:
             raise Exception
-        colour = hex(intcolour)
+        color = hex(intcolor)
     except Exception as e:
-        colours = {"red": 0xFF0000, "green": 0x00FF00, "blue": 0x0000FF, "orange": 0xF47B4F, "pink": 0xFFC0CB, "purple": 0x800080}
-        if colour in colours:
-            intcolour = colours[colour]
-            colour = str(hex(colours[colour]))
+        colors = {"red": 0xFF0000, "green": 0x00FF00, "blue": 0x0000FF, "orange": 0xF47B4F, "pink": 0xFFC0CB, "purple": 0x800080}
+        if color in colors:
+            intcolor = colors[color]
+            color = str(hex(colors[color]))
         else:
-            await ctx.respond("You need to give me either a hex code for a colour or basic colour name!\n" +
-                              "Valid colours are as follows: red, green, blue, orange, pink and purple.")
+            await ctx.respond("You need to give me either a hex code for a color or basic color name!\n" +
+                              "Valid colors are as follows: red, green, blue, orange, pink and purple.")
             return
-    if intcolour == 0:
-        await ctx.respond("You cannot set your colour to pure black.")
+    if intcolor == 0:
+        await ctx.respond("You cannot set your color to pure black.")
         return
     
     for role in ctx.author.roles:
-        if role.colour.value != 0:
+        if role.color.value != 0:
             await ctx.author.remove_roles(role)
     roles = await ctx.guild.fetch_roles()
     for role in roles:
-        if role.name == colour.lstrip("0x").upper():
+        if role.name == color.lstrip("0x").upper():
             await ctx.author.add_roles(role)
             await ctx.respond("Sounds good to me! Role added!")
             break
     else:
-        role = await ctx.guild.create_role(name= colour.lstrip("0x").upper(), colour=intcolour)
+        role = await ctx.guild.create_role(name= color.lstrip("0x").upper(), color=intcolor)
         await ctx.author.add_roles(role)
         await ctx.respond("Sounds good to me! Role created and added!")
 
