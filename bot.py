@@ -114,6 +114,41 @@ async def poll(ctx: SlashContext, poll: str):
             break  # ensure we don't react more than once
 
 
+@bot.slash_command(description="Set your colour!")
+async def setcolour(ctx: SlashContext, colour: str):
+    colour = colour.lstrip("#")
+    try:
+        intcolour = int(colour, 16)
+        if len(colour) != 6:
+            raise Exception
+        colour = hex(intcolour)
+    except Exception as e:
+        colours = {"red": 0xFF0000, "green": 0x00FF00, "blue": 0x0000FF, "orange": 0xF47B4F, "pink": 0xFFC0CB, "purple": 0x800080}
+        if colour in colours:
+            intcolour = colours[colour]
+            colour = str(hex(colours[colour]))
+        else:
+            await ctx.respond("You need to give me either a hex code for a colour or basic colour name!\n" +
+                              "Valid colours are as follows: red, green, blue, orange, pink and purple.")
+            return
+    if intcolour == 0:
+        await ctx.respond("You cannot set your colour to pure black.")
+        return
+    
+    for role in ctx.author.roles:
+        if role.colour.value != 0:
+            await ctx.author.remove_roles(role)
+    roles = await ctx.guild.fetch_roles()
+    for role in roles:
+        if role.name == colour.lstrip("0x").upper():
+            await ctx.author.add_roles(role)
+            await ctx.respond("Sounds good to me! Role added!")
+            break
+    else:
+        role = await ctx.guild.create_role(name= colour.lstrip("0x").upper(), colour=intcolour)
+        await ctx.author.add_roles(role)
+        await ctx.respond("Sounds good to me! Role created and added!")
+
 # admin commands
 
 
@@ -145,7 +180,6 @@ async def changestatus(ctx: SlashContext, status: str):
         await ctx.respond(f"Changed status to \"{status}\"!", ephemeral=True)
     else:
         await ctx.respond("No.")
-
 
 # Global command error handler
 @bot.event
