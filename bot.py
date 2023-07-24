@@ -66,7 +66,7 @@ async def on_member_update(before: discord.Member, after: discord.Member):
                     print("deleting role ", role.name)
                     await role.delete()
 @bot.event
-async def on_raw_member_remove(payload: discord.RawMemberRemoveEvent):
+async def on_raw_member_remove(payload):
     for role in bot.get_guild(payload.guild_id):
         if role.color.value != 0:
             if len(role.members) == 0:
