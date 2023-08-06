@@ -67,7 +67,7 @@ async def on_member_update(before: discord.Member, after: discord.Member):
                     await role.delete()
 @bot.event
 async def on_raw_member_remove(payload: discord.RawMemberRemoveEvent):
-    for role in bot.get_guild(payload.guild_id):
+    for role in await bot.get_guild(payload.guild_id).fetch_roles():
         if role.color.value != 0:
             if len(role.members) == 0:
                 print("deleting role ", role.name)
@@ -79,6 +79,18 @@ async def on_raw_member_remove(payload: discord.RawMemberRemoveEvent):
 async def ping(ctx: SlashContext):
     await ctx.respond(f"Pong! {round(bot.latency * 1000)}ms")
 
+@bot.slash_command(description="Remove all unused color roles, owner only")
+async def remove_unused_colors(ctx: SlashContext):
+    info = await bot.application_info()
+    if ctx.author == info.owner:
+        for role in await ctx.guild.fetch_roles():
+            if role.color.value != 0:
+                if len(role.members) == 0:
+                    print("deleting role ", role.name)
+                    await role.delete()
+        await ctx.respond("done!")
+    else:
+        await ctx.respond("no")
 
 @bot.slash_command(description="Get the source code!")
 async def github(ctx: SlashContext):
