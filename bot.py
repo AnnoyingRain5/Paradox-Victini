@@ -21,7 +21,7 @@ COUNT_CHANNEL_ID = 838432869248008203
 
 @bot.event
 async def on_ready():
-    print(f'We have logged in as {bot.user}')
+    print(f"We have logged in as {bot.user}")
     await bot.change_presence(activity=discord.Game(name="with other Victinis!"))
 
 
@@ -42,7 +42,9 @@ async def on_message(ctx: discord.Message):
     if ctx.channel.id == 809238709635383327:
         if ctx.attachments == [] and "http" not in ctx.content:
             await ctx.delete()
-            await ctx.author.send("You can only send your art in <#809238709635383327>, all messages must contain art or a link to it!")
+            await ctx.author.send(
+                "You can only send your art in <#809238709635383327>, all messages must contain art or a link to it!"
+            )
     if ctx.channel.id == COUNT_CHANNEL_ID:
         message = await ctx.channel.history(limit=2).flatten()
         message = message[1]
@@ -55,7 +57,15 @@ async def on_message(ctx: discord.Message):
     # if the channnel is a DM
     if isinstance(ctx.channel, discord.DMChannel):
         info = await bot.application_info()
-        await info.owner.send("You have a new DM from " + ctx.author.name + " (" + ctx.author.mention + "):\n" + ctx.content)
+        await info.owner.send(
+            "You have a new DM from "
+            + ctx.author.name
+            + " ("
+            + ctx.author.mention
+            + "):\n"
+            + ctx.content
+        )
+
 
 @bot.event
 async def on_member_update(before: discord.Member, after: discord.Member):
@@ -65,6 +75,8 @@ async def on_member_update(before: discord.Member, after: discord.Member):
                 if len(role.members) == 0:
                     print("deleting role ", role.name)
                     await role.delete()
+
+
 @bot.event
 async def on_raw_member_remove(payload: discord.RawMemberRemoveEvent):
     for role in await bot.get_guild(payload.guild_id).fetch_roles():
@@ -73,11 +85,14 @@ async def on_raw_member_remove(payload: discord.RawMemberRemoveEvent):
                 print("deleting role ", role.name)
                 await role.delete()
 
+
 # main commands
+
 
 @bot.slash_command(description="Ping the bot!")
 async def ping(ctx: SlashContext):
     await ctx.respond(f"Pong! {round(bot.latency * 1000)}ms")
+
 
 @bot.slash_command(description="Remove all unused color roles, owner only")
 async def remove_unused_colors(ctx: SlashContext):
@@ -92,9 +107,12 @@ async def remove_unused_colors(ctx: SlashContext):
     else:
         await ctx.respond("no")
 
+
 @bot.slash_command(description="Get the source code!")
 async def github(ctx: SlashContext):
-    await ctx.respond("check out my source code here: https://github.com/AnnoyingRain5/Victini-Guard, and send a PR if you're feeling kind!")
+    await ctx.respond(
+        "check out my source code here: https://github.com/AnnoyingRain5/Victini-Guard, and send a PR if you're feeling kind!"
+    )
 
 
 @bot.slash_command(description="Format a question for the QnA channel!")
@@ -103,14 +121,16 @@ async def ask(ctx: SlashContext, question: str):
         await ctx.respond("This command can only be run in text channels")
         return
     if ctx.channel.id != QNA_CHANNEL_ID:
-        await ctx.respond(f"This needs to be used in the {bot.get_channel(QNA_CHANNEL_ID).mention} channel!", ephemeral=True)
+        await ctx.respond(
+            f"This needs to be used in the {bot.get_channel(QNA_CHANNEL_ID).mention} channel!",
+            ephemeral=True,
+        )
         return
     embed = discord.Embed()
-    embed.set_author(name=ctx.author.display_name,
-                     icon_url=ctx.author.display_avatar)
+    embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.display_avatar)
     embed.title = question
     embed.set_footer(text=f"New question by {ctx.author.display_name}")
-    embed.color = 0x20a303
+    embed.color = 0x20A303
     await ctx.respond(embed=embed)
 
 
@@ -122,20 +142,25 @@ async def poll(ctx: SlashContext, poll: str):
         return
     # ensure we are in the polls channel
     if ctx.channel.id != QNA_CHANNEL_ID:
-        await ctx.respond(f"This needs to be used in the {bot.get_channel(QNA_CHANNEL_ID).mention} channel!", ephemeral=True)
+        await ctx.respond(
+            f"This needs to be used in the {bot.get_channel(QNA_CHANNEL_ID).mention} channel!",
+            ephemeral=True,
+        )
         return
     embed = discord.Embed()
-    embed.set_author(name=ctx.author.display_name,
-                     icon_url=ctx.author.display_avatar)
+    embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.display_avatar)
     embed.title = poll
     embed.set_footer(text=f"New poll by {ctx.author.display_name}")
-    embed.color = 0x2b34cf
+    embed.color = 0x2B34CF
     await ctx.respond(embed=embed)
     # Find the message that we just posted in the history
     async for message in ctx.channel.history():
         if not message.embeds:
             continue
-        if message.embeds[0].author.name == embed.author.name and message.embeds[0].title == embed.title:
+        if (
+            message.embeds[0].author.name == embed.author.name
+            and message.embeds[0].title == embed.title
+        ):
             # React to that message
             await message.add_reaction(":vyes:1054227682944110612")
             await message.add_reaction(":vno:1054227685016092833")
@@ -151,18 +176,27 @@ async def setcolor(ctx: SlashContext, color: str):
             raise Exception
         color = hex(intcolor)
     except Exception as e:
-        colors = {"red": 0xFF0000, "green": 0x00FF00, "blue": 0x0000FF, "orange": 0xF47B4F, "pink": 0xFFC0CB, "purple": 0x800080}
+        colors = {
+            "red": 0xFF0000,
+            "green": 0x00FF00,
+            "blue": 0x0000FF,
+            "orange": 0xF47B4F,
+            "pink": 0xFFC0CB,
+            "purple": 0x800080,
+        }
         if color in colors:
             intcolor = colors[color]
             color = str(hex(colors[color]))
         else:
-            await ctx.respond("You need to give me either a hex code for a color or basic color name!\n" +
-                              "Valid colors are as follows: red, green, blue, orange, pink and purple.")
+            await ctx.respond(
+                "You need to give me either a hex code for a color or basic color name!\n"
+                + "Valid colors are as follows: red, green, blue, orange, pink and purple."
+            )
             return
     if intcolor == 0:
         await ctx.respond("You cannot set your color to pure black.")
         return
-    
+
     for role in ctx.author.roles:
         if role.color.value != 0:
             await ctx.author.remove_roles(role)
@@ -173,9 +207,12 @@ async def setcolor(ctx: SlashContext, color: str):
             await ctx.respond("Sounds good to me! Role added!")
             break
     else:
-        role = await ctx.guild.create_role(name= color.lstrip("0x").upper(), color=intcolor)
+        role = await ctx.guild.create_role(
+            name=color.lstrip("0x").upper(), color=intcolor
+        )
         await ctx.author.add_roles(role)
         await ctx.respond("Sounds good to me! Role created and added!")
+
 
 # admin commands
 
@@ -185,7 +222,7 @@ async def senddm(ctx: SlashContext, user: discord.User, message: str):
     info = await bot.application_info()
     if ctx.author == info.owner:
         await user.send(message)
-        await ctx.respond(f"Sent \"{message}\" to {user.mention}!", ephemeral=True)
+        await ctx.respond(f'Sent "{message}" to {user.mention}!', ephemeral=True)
     else:
         await ctx.respond("No.")
 
@@ -205,16 +242,19 @@ async def changestatus(ctx: SlashContext, status: str):
     info = await bot.application_info()
     if ctx.author == info.owner:
         await bot.change_presence(activity=discord.Game(name=status))
-        await ctx.respond(f"Changed status to \"{status}\"!", ephemeral=True)
+        await ctx.respond(f'Changed status to "{status}"!', ephemeral=True)
     else:
         await ctx.respond("No.")
+
 
 # Global command error handler
 @bot.event
 async def on_application_command_error(ctx, error):
     # Check failures should be handled by the individual cogs, not here.
     if not isinstance(error, CheckFailure):
-        await ctx.send(f"An error occured and has been automatically reported to the developer. Error: `{error}`")
+        await ctx.send(
+            f"An error occured and has been automatically reported to the developer. Error: `{error}`"
+        )
         info = await bot.application_info()
         sio = StringIO()
         # traceback requires a file-like object, so we use StringIO to get the traceback as a string
@@ -225,7 +265,9 @@ async def on_application_command_error(ctx, error):
             message = f"An error occurred in {ctx.guild.name} ({ctx.guild.id}) in {ctx.channel.name} ({ctx.channel.mention}) by {ctx.author.name} ({ctx.author.mention})\n"
         else:  # command run in DM, do not include guild info
             message = f"An error occurred in A DM with {ctx.author.name} ({ctx.author.mention})\n"
-        message += f"Error: `{error}`\n The traceback will be supplied in the next message."
+        message += (
+            f"Error: `{error}`\n The traceback will be supplied in the next message."
+        )
         await info.owner.send(message)
         await info.owner.send(f"```py\n{tb}```")
 
@@ -243,4 +285,5 @@ async def on_error(event, *args, **kwargs):
     await info.owner.send(message)
     await info.owner.send(f"```py\n{tb}```")
 
-bot.run(os.getenv('TOKEN'))
+
+bot.run(os.getenv("TOKEN"))
