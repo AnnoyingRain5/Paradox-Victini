@@ -30,14 +30,6 @@ async def on_message(ctx: discord.Message):
     if ctx.author == bot.user:
         return
 
-    # if the channel is polls
-    if ctx.channel.id == QNA_CHANNEL_ID:
-        if ctx.content.endswith("?"):
-            response = f"Hey {ctx.author.mention}!\n"
-            response += "If this is a question of the day, please mark it as such by using /ask!\n"
-            response += "This message will self destruct in 10 seconds"
-            await ctx.channel.send(response, delete_after=10)
-
     # if the channel is artwork showcase
     if ctx.channel.id == 809238709635383327:
         if ctx.attachments == [] and "http" not in ctx.content:
