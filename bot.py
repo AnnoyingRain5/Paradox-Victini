@@ -83,7 +83,7 @@ async def on_raw_member_remove(payload: discord.RawMemberRemoveEvent):
 
 @bot.slash_command(description="Ping the bot!")
 async def ping(ctx: SlashContext):
-    await ctx.respond(f"Pong! {round(bot.latency * 1000)}ms")
+    await ctx.respond(f"Pong! {round(bot.latency * 1000)}ms", ephemeral=True)
 
 
 @bot.slash_command(description="Remove all unused color roles, owner only")
@@ -95,9 +95,9 @@ async def remove_unused_colors(ctx: SlashContext):
                 if len(role.members) == 0:
                     print("deleting role ", role.name)
                     await role.delete()
-        await ctx.respond("done!")
+        await ctx.respond("done!", ephemeral=True)
     else:
-        await ctx.respond("no")
+        await ctx.respond("no", ephemeral=True)
 
 
 @bot.slash_command(description="Get the source code!")
@@ -110,7 +110,9 @@ async def github(ctx: SlashContext):
 @bot.slash_command(description="Format a question for the QnA channel!")
 async def ask(ctx: SlashContext, question: str):
     if not isinstance(ctx.channel, discord.TextChannel):
-        await ctx.respond("This command can only be run in text channels")
+        await ctx.respond(
+            "This command can only be run in text channels", ephemeral=True
+        )
         return
     if ctx.channel.id != QNA_CHANNEL_ID:
         await ctx.respond(
@@ -182,11 +184,12 @@ async def setcolor(ctx: SlashContext, color: str):
         else:
             await ctx.respond(
                 "You need to give me either a hex code for a color or basic color name!\n"
-                + "Valid colors are as follows: red, green, blue, orange, pink and purple."
+                + "Valid colors are as follows: red, green, blue, orange, pink and purple.",
+                ephemeral=True,
             )
             return
     if intcolor == 0:
-        await ctx.respond("You cannot set your color to pure black.")
+        await ctx.respond("You cannot set your color to pure black.", ephemeral=True)
         return
 
     for role in ctx.author.roles:
@@ -196,14 +199,14 @@ async def setcolor(ctx: SlashContext, color: str):
     for role in roles:
         if role.name == color.lstrip("0x").upper():
             await ctx.author.add_roles(role)
-            await ctx.respond("Sounds good to me! Role added!")
+            await ctx.respond("Sounds good to me! Role added!", ephemeral=True)
             break
     else:
         role = await ctx.guild.create_role(
             name=color.lstrip("0x").upper(), color=intcolor
         )
         await ctx.author.add_roles(role)
-        await ctx.respond("Sounds good to me! Role created and added!")
+        await ctx.respond("Sounds good to me! Role created and added!", ephemeral=True)
 
 
 # admin commands
@@ -216,7 +219,7 @@ async def senddm(ctx: SlashContext, user: discord.User, message: str):
         await user.send(message)
         await ctx.respond(f'Sent "{message}" to {user.mention}!', ephemeral=True)
     else:
-        await ctx.respond("No.")
+        await ctx.respond("No.", ephemeral=True)
 
 
 @bot.slash_command(description="owner only command")
@@ -226,7 +229,7 @@ async def say(ctx: SlashContext, message: str):
         await ctx.channel.send(message)
         await ctx.respond(f"Done!", ephemeral=True)
     else:
-        await ctx.respond("No.")
+        await ctx.respond("No.", ephemeral=True)
 
 
 @bot.slash_command(description="owner only command")
@@ -236,7 +239,7 @@ async def changestatus(ctx: SlashContext, status: str):
         await bot.change_presence(activity=discord.Game(name=status))
         await ctx.respond(f'Changed status to "{status}"!', ephemeral=True)
     else:
-        await ctx.respond("No.")
+        await ctx.respond("No.", ephemeral=True)
 
 
 # Global command error handler
