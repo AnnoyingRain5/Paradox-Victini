@@ -35,9 +35,9 @@ async def on_ready():
         for reaction in message.reactions:
             for user in await reaction.users().flatten():
                 role: discord.Role = channel.guild.get_role(REACTION_ROLES_DICT[messageid])  # type: ignore
-                if type(user) == discord.member:
+                try:
                     await user.add_roles(role)
-                else:
+                except:
                     print("Removing reaction from: " + str(user.name))
                     await reaction.remove(user)
 
