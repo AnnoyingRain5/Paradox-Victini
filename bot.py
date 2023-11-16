@@ -29,6 +29,17 @@ REACTION_ROLES_DICT = {
 async def on_ready():
     print(f"We have logged in as {bot.user}")
     await bot.change_presence(activity=discord.Game(name="with other Victinis!"))
+    channel = await bot.fetch_channel(757682443120541888)
+    for messageid in REACTION_ROLES_DICT.keys():
+        message = await channel.fetch_message(messageid)
+        for reaction in message.reactions:
+            for user in await reaction.users().flatten():
+                role: discord.Role = channel.guild.get_role(REACTION_ROLES_DICT[messageid])  # type: ignore
+                if type(user) == discord.member:
+                    await user.add_roles(role)
+                else:
+                    print("Removing reaction from: " + str(user.name))
+                    await reaction.remove(user)
 
 
 @bot.event
@@ -78,7 +89,10 @@ async def on_raw_reaction_remove(payload: discord.RawReactionActionEvent):
     if payload.message_id in REACTION_ROLES_DICT.keys():
         guild = await bot.fetch_guild(payload.guild_id)
         role: discord.Role = guild.get_role(REACTION_ROLES_DICT[payload.message_id])  # type: ignore
-        member = await guild.fetch_member(payload.user_id)
+        try:
+            member = await guild.fetch_member(payload.user_id)
+        except:  # user has left
+            return
         await member.remove_roles(role)
 
 
