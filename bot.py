@@ -18,6 +18,12 @@ bot = discord.Bot(intents=intents)
 QNA_CHANNEL_ID = 1094266918556422204
 COUNT_CHANNEL_ID = 838432869248008203
 
+REACTION_ROLES_DICT = {
+    937181442620915773: 840409170443894804,  # art project participation
+    937181709349298217: 936114664289488939,  # voice chat stream ping
+    982104145907576863: 982099311921881089,  # announcement ping
+}
+
 
 @bot.event
 async def on_ready():
@@ -57,6 +63,23 @@ async def on_message(ctx: discord.Message):
             + "):\n"
             + ctx.content
         )
+
+
+@bot.event
+async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
+    if payload.message_id in REACTION_ROLES_DICT.keys():
+        guild = await bot.fetch_guild(payload.guild_id)
+        role: discord.Role = guild.get_role(REACTION_ROLES_DICT[payload.message_id])  # type: ignore
+        await payload.member.add_roles(role)
+
+
+@bot.event
+async def on_raw_reaction_remove(payload: discord.RawReactionActionEvent):
+    if payload.message_id in REACTION_ROLES_DICT.keys():
+        guild = await bot.fetch_guild(payload.guild_id)
+        role: discord.Role = guild.get_role(REACTION_ROLES_DICT[payload.message_id])  # type: ignore
+        member = await guild.fetch_member(payload.user_id)
+        await member.remove_roles(role)
 
 
 @bot.event
